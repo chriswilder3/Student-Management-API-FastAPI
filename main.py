@@ -1,6 +1,11 @@
 import uvicorn # Uvicorn is ASGI webserver necessary for async framework
 from fastapi import FastAPI, Path
 from typing import Optional
+from pydantic import BaseModel # Pydantic is library for data validation and 
+                               # settings management using type annotations.
+                               # It creates dataclasses called models, which 
+                               # ensure data conforms to specific schema.
+                               # It can also convert datatype when possible
 
 app = FastAPI() #instantiate the app
 
@@ -17,9 +22,9 @@ students = {
 def index():
     return {'message':"Hello World"}
 
-@app.get('/member')
-def member(name:str):  # this page/method expects str val (some parameter)
-    return {'Member':f'{name}'} # append the name now
+@app.get('/all_students')
+def all_students():  
+    return students 
 
 # The parameters can be obtained either   
 # 1. With Path Parameters (below)
@@ -82,6 +87,44 @@ def get_student(*, student_id:int, name : Optional[str] = None, test:str):
 # 1. student_id if name not given
 # 2. stud name if name is given
 
+# Pydantic, Models
+class Student(BaseModel):
+    name : str
+    age : int
+    dept : str
+    # Note: This class must reflect the schema we want to enforce on student
+    # data received, hence is similar to student objects
+
+# Post data to Create New Data
+@app.post('/create_student/{student_id}')
+def create_student( student_id:int, student: Student): # Student model makes sure
+    if student_id in students:                         # data follows student structure
+        return {"error":"student Already exists"}
+    else:
+        students[student_id] = student
+        return students[student_id]
+
+# Put method : Update already existing data
+
+# Note that Student model of Pydantic allows only when all fields filled.
+# But during we may need to pass only one/few set of values to PUT, not all.
+# Hence lets create a new model which takes optionality into consideration
+
+class UpdateStudent(BaseModel):
+    name : Optional[str] = None
+    age : Optional[int] = None
+    dept : Optional[str] = None # Now we can pass only field we need to update
+
+@app.put('/update_student/{student_id}')
+def update_student(student_id :int, student: UpdateStudent):
+    if student_id not in students:
+        return {"Error" : "No such student ID "}
+    student = student.dict(exclude_unset = True) # Cant directly iterate on 
+                            # model object. So Use dict(), exclude_unset gives
+                            # only updated vals. Now student is python dict
+    for field,val in student.items():
+        students[student_id][field] = val
+    return students[student_id]
 
 if __name__ == '__main__':  # Run the app with uvicorn ASGI server
     uvicorn.run(app, host = '127.0.0.1', port=8000)
