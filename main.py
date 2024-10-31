@@ -53,15 +53,28 @@ def read_student_by_name(name: Optional[str] = None):
         if students[stud_id]['name'] == name:
             return students[stud_id]
     return {'error': 'Student not found'}
+  
+    # Note that by default, name here is accepted as query parameter. So we can 
+    # directly feed it in /docs or use http://127.0.0.1:8000/get-names?name=sachin
+    # Note that when HTML forms/inputs use GET method, query params are used.
+
+    #  Here, name is defined as an optional parameter with a default 
+    # value of None. If the client doesn’t provide a value for name, 
+    # it automatically defaults to None.
+
+    # If u dont provide default val say fun(name: Optional[str]) 
+    # then FastAPI will interpret this as a required query parameter 
+    # due to the absence of a default value
 
 # If we need more than one param at endpoint, make sure default 
 # values are not passed first.
 @app.get('/get-student-details')
-def read_student_details(name: Optional[str] = None, test: str = "default_test"):
+def read_student_details(*,name: Optional[str] = None, test: str):
     for stud_id in students:
         if students[stud_id]['name'] == name:
             return students[stud_id]
     return {'error': 'Student not found'}
+  # The above would have given error if we dont include * as first param
 
 # We can combine Path and Query params.
 @app.get('/get-student-details/{student_id}')
