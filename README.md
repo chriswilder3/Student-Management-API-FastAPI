@@ -1,6 +1,6 @@
 # Student Management API with FastAPI
 
-A lightweight and extendable API built with FastAPI to manage student records. This project provides basic CRUD (Create, Read, Update, Delete) operations on student data with flexible query and path parameters for efficient data retrieval. 
+A lightweight and extendable API built with FastAPI to manage student records. This project provides basic CRUD (Create, Read, Update, Delete) operations on student data with flexible query and path parameters for efficient data retrieval.
 
 ## Features
 - **Path Parameters**: Access student data by unique IDs, with built-in validation.
@@ -11,11 +11,14 @@ A lightweight and extendable API built with FastAPI to manage student records. T
 ## Endpoints
 
 1. **Root Endpoint**: `GET /` - Returns a "Hello World" message.
-2. **Member Search**: `GET /member?name={name}` - Returns a greeting for the provided name.
+2. **All Students**: `GET /all-students` - Retrieves a list of all student records.
 3. **Student By ID**: `GET /get-student/{student_id}` - Retrieves student data based on a unique ID.
-4. **Student By Name**: `GET /get-names?name={name}` - Finds student details by name (optional query parameter).
-5. **Custom Search**: `GET /get-details` - Flexible search combining name and custom parameters.
-6. **Combined Path & Query**: `GET /get-names/{student_id}?name={name}&test={test}` - Search by both ID and optional name.
+4. **Student By Name**: `GET /get-student-by-name?name={name}` - Finds student details by name (optional query parameter).
+5. **Student Details**: `GET /get-student-details` - Flexible search combining name and a default test parameter. Requires a query parameter for the name.
+6. **Combined Path & Query**: `GET /get-student-details/{student_id}` - Search by both ID and optional name, with a default test parameter.
+7. **Create Student**: `POST /create-student/{student_id}` - Creates a new student record. Expects a JSON body with student details (name, age, dept).
+8. **Update Student**: `PUT /update-student/{student_id}` - Updates an existing student record. Expects a JSON body with any combination of fields (name, age, dept).
+9. **Delete Student**: `DELETE /delete-student/{student_id}` - Deletes a student record by ID.
 
 ## Getting Started
 
